@@ -54,7 +54,8 @@ namespace DevFreela.Application.Services.Implementations
 
             var projectsViewModel = _dbContext.Projects
                 .Select(x => new ProjectViewModel() 
-                { 
+                {
+                    Id = x.Id,
                     Title = x.Title,
                     CreatedAt = x.CreatedAt                    
                 })
