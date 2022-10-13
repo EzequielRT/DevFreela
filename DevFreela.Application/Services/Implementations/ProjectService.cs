@@ -1,52 +1,97 @@
 ﻿using DevFreela.Application.InputModels;
 using DevFreela.Application.Services.Interfaces;
 using DevFreela.Application.ViewModels;
-using System;
+using DevFreela.Core.Entities;
+using DevFreela.Infrastructure.Persistence;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DevFreela.Application.Services.Implementations
 {
     public class ProjectService : IProjectService
     {
-        public Task<int> Create(NewProjectInputModel inputModel)
+        private readonly DevFreelaDbContext _dbContext;
+
+        public ProjectService(DevFreelaDbContext dbContext)
         {
-            throw new NotImplementedException();
+            _dbContext = dbContext;
         }
 
-        public Task CreateComment(CreateCommentInputModel inputModel)
+        public async Task<int> Create(NewProjectInputModel inputModel)
         {
-            throw new NotImplementedException();
+            var project = new Project(inputModel.Title, inputModel.Description, inputModel.IdClient, inputModel.IdFreelancer, inputModel.TotalCost);
+
+            _dbContext.Projects.Add(project);
+
+            return project.Id;
         }
 
-        public Task Delete(int id)
+        public async Task CreateComment(CreateCommentInputModel inputModel)
         {
-            throw new NotImplementedException();
+            var comment = new ProjectComment(inputModel.Content, inputModel.IdProject, inputModel.IdUser);
+
+            _dbContext.ProjectComments.Add(comment);
         }
 
-        public Task Finish(int id)
+        public async Task Delete(int id)
         {
-            throw new NotImplementedException();
+            var project = _dbContext.Projects.SingleOrDefault(p => p.Id == id);
+
+            project.Cancel();
         }
 
-        public Task<List<ProjectViewModel>> GetAll(string query)
+        public async Task Finish(int id)
         {
-            throw new NotImplementedException();
+            var project = _dbContext.Projects.SingleOrDefault(p => p.Id == id);
+
+            project.Cancel();
         }
 
-        public Task<ProjectDetailsViewModel> GetById(int id)
+        public async Task<List<ProjectViewModel>> GetAll(string query)
         {
-            throw new NotImplementedException();
+            var projects = _dbContext.Projects;
+
+            var projectsViewModel = _dbContext.Projects
+                .Select(x => new ProjectViewModel() 
+                { 
+                    Title = x.Title,
+                    CreatedAt = x.CreatedAt                    
+                })
+                .ToList();
+
+            return projectsViewModel;
         }
 
-        public Task Start(int id)
+        public async Task<ProjectDetailsViewModel> GetById(int id)
         {
-            throw new NotImplementedException();
+            var project = _dbContext.Projects.SingleOrDefault(p => p.Id == id);
+
+            var projectDetailsViewModel = new ProjectDetailsViewModel()
+            {
+                Id = project.Id,
+                Title = project.Title,
+                Description = project.Description,
+                TotalCost = project.TotalCost,
+                StartedAt = project.StartedAt,
+                FinishedAt = project.FinishedAt
+            };
+
+            return projectDetailsViewModel;
         }
 
-        public Task Update(UpdateProjectInputModel inputModel)
+        public async Task Start(int id)
         {
-            throw new NotImplementedException();
+            var project = _dbContext.Projects.SingleOrDefault(p => p.Id == id);
+
+            project.Start();
+        }
+
+        public async Task Update(UpdateProjectInputModel inputModel)
+        {
+            var project = _dbContext.Projects.SingleOrDefault(p => p.Id == inputModel.Id);
+
+            project.Update(inputModel.Title, inputModel.Description, inputModel.TotalCost);
         }
     }
 }
