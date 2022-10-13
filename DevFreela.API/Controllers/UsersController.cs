@@ -1,5 +1,6 @@
 ﻿using DevFreela.API.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace DevFreela.API.Controllers
 {
@@ -8,19 +9,19 @@ namespace DevFreela.API.Controllers
     public class UsersController : ControllerBase
     {
         [HttpGet("{id}")]
-        public IActionResult GetById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
             return Ok();
         }
 
         [HttpPost]
-        public IActionResult Create([FromBody] CreateUserModel createUserModel)
+        public async Task<IActionResult> Create([FromBody] CreateUserModel createUserModel)
         {
             return CreatedAtAction(nameof(GetById), new { id = 1 }, createUserModel);
         }
 
         [HttpPut("{id}/login")]
-        public IActionResult Login(int id, [FromBody] LoginModel loginModel)
+        public async Task<IActionResult> Login(int id, [FromBody] LoginModel loginModel)
         {
             return NoContent();
         }

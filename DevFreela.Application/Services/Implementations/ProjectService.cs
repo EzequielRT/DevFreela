@@ -27,25 +27,35 @@ namespace DevFreela.Application.Services.Implementations
             return project.Id;
         }
 
-        public async Task CreateComment(CreateCommentInputModel inputModel)
+        public async Task<bool> CreateComment(CreateCommentInputModel inputModel)
         {
             var comment = new ProjectComment(inputModel.Content, inputModel.IdProject, inputModel.IdUser);
 
             _dbContext.ProjectComments.Add(comment);
+
+            return true;
         }
 
-        public async Task Delete(int id)
+        public async Task<bool> Delete(int id)
         {
             var project = _dbContext.Projects.SingleOrDefault(p => p.Id == id);
 
+            if (project == null)
+                return false;
+
             project.Cancel();
+            return true;
         }
 
-        public async Task Finish(int id)
+        public async Task<bool> Finish(int id)
         {
             var project = _dbContext.Projects.SingleOrDefault(p => p.Id == id);
 
+            if (project == null)
+                return false;
+
             project.Cancel();
+            return true;
         }
 
         public async Task<List<ProjectViewModel>> GetAll(string query)
@@ -68,6 +78,9 @@ namespace DevFreela.Application.Services.Implementations
         {
             var project = _dbContext.Projects.SingleOrDefault(p => p.Id == id);
 
+            if (project == null)
+                return null;
+
             var projectDetailsViewModel = new ProjectDetailsViewModel()
             {
                 Id = project.Id,
@@ -81,18 +94,26 @@ namespace DevFreela.Application.Services.Implementations
             return projectDetailsViewModel;
         }
 
-        public async Task Start(int id)
+        public async Task<bool> Start(int id)
         {
             var project = _dbContext.Projects.SingleOrDefault(p => p.Id == id);
 
+            if (project == null)
+                return false;
+
             project.Start();
+            return true;
         }
 
-        public async Task Update(UpdateProjectInputModel inputModel)
+        public async Task<bool> Update(UpdateProjectInputModel inputModel)
         {
             var project = _dbContext.Projects.SingleOrDefault(p => p.Id == inputModel.Id);
 
+            if (project == null)
+                return false;
+
             project.Update(inputModel.Title, inputModel.Description, inputModel.TotalCost);
+            return true;
         }
     }
 }

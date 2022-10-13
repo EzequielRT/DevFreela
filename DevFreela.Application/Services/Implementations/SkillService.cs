@@ -20,6 +20,9 @@ namespace DevFreela.Application.Services.Implementations
         {
             var skills = _dbContext.Skills;
 
+            if (skills == null)
+                return null;
+
             var skillsViewModels = skills
                 .Select(s => new SkillViewModel()
                 {
