@@ -1,5 +1,6 @@
 ﻿using DevFreela.API.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace DevFreela.API.Controllers
 {
@@ -7,19 +8,19 @@ namespace DevFreela.API.Controllers
     public class ProjectsController : Controller
     {
         [HttpGet]
-        public IActionResult Get(string query)
+        public async Task<IActionResult> Get(string query)
         {
             return Ok();
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
             return Ok();
         }
 
         [HttpPost]
-        public IActionResult Create([FromBody] CreateProjectModel createProject)
+        public async Task<IActionResult> Create([FromBody] CreateProjectModel createProject)
         {
             if (createProject.Title.Length > 50)
             {
@@ -32,7 +33,7 @@ namespace DevFreela.API.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromBody] UpdateProjectModel updateProject)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateProjectModel updateProject)
         {
             if (string.IsNullOrWhiteSpace(updateProject.Description))
             {
@@ -43,25 +44,25 @@ namespace DevFreela.API.Controllers
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {            
             return NoContent();
         }
 
         [HttpPost("{id}/comments")]
-        public IActionResult CreateComment(int id, [FromBody] CreateCommentModel createCommentModel)
+        public async Task<IActionResult> CreateComment(int id, [FromBody] CreateCommentModel createCommentModel)
         {
             return NoContent();
         }
 
         [HttpPut("{id}/start")]
-        public IActionResult StartProject(int id)
+        public async Task<IActionResult> StartProject(int id)
         {
             return NoContent();
         }
 
         [HttpPut("{id}/finish")]
-        public IActionResult FinishProject(int id)
+        public async Task<IActionResult> FinishProject(int id)
         {
             return NoContent();
         }
