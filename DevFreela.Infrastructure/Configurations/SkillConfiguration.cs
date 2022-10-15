@@ -10,7 +10,7 @@ namespace DevFreela.Infrastructure.Configurations
         {
             builder
                 .ToTable("Skill")
-            .HasKey(s => s.Id);
+                .HasKey(s => s.Id);
         }
     }
 }

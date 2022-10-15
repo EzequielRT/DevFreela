@@ -10,12 +10,11 @@ namespace DevFreela.Infrastructure.Configurations
         {
             builder
                 .ToTable("User")
-            .HasKey(s => s.Id);
+                .HasKey(s => s.Id);
 
             builder
                 .HasMany(u => u.Skills)
                 .WithOne()
-                .HasForeignKey(us => us.IdUser)
                 .HasForeignKey(us => us.IdSkill)
                 .OnDelete(DeleteBehavior.Restrict);
         }

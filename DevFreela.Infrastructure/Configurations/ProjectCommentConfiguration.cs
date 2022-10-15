@@ -10,10 +10,10 @@ namespace DevFreela.Infrastructure.Configurations
         {
             builder
                 .ToTable("ProjectComment")
-            .HasKey(pc => pc.Id);
+                .HasKey(pc => pc.Id);
 
             builder
-                 .HasOne(pc => pc.Project)
+                .HasOne(pc => pc.Project)
                 .WithMany(p => p.Comments)
                 .HasForeignKey(pc => pc.IdProject)
                 .OnDelete(DeleteBehavior.Restrict);
