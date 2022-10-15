@@ -4,13 +4,13 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace DevFreela.Infrastructure.Configurations
 {
-    public class SkillConfiguration : IEntityTypeConfiguration<Skill>
+    public class UserSkillConfiguration : IEntityTypeConfiguration<UserSkill>
     {
-        public void Configure(EntityTypeBuilder<Skill> builder)
+        public void Configure(EntityTypeBuilder<UserSkill> builder)
         {
             builder
-                .ToTable("Skill")
-            .HasKey(s => s.Id);
+                .ToTable("UserSkill")
+                .HasKey(us => us.Id);
         }
     }
 }

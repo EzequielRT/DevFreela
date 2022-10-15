@@ -15,6 +15,7 @@ namespace DevFreela.Infrastructure.Configurations
             builder
                 .HasMany(u => u.Skills)
                 .WithOne()
+                .HasForeignKey(us => us.IdUser)
                 .HasForeignKey(us => us.IdSkill)
                 .OnDelete(DeleteBehavior.Restrict);
         }
