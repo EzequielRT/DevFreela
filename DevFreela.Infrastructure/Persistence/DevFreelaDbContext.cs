@@ -20,22 +20,6 @@ namespace DevFreela.Infrastructure.Persistence
         {
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
-            modelBuilder.Entity<ProjectComment>()
-                .ToTable("ProjectComment")
-                .HasKey(pc => pc.Id);
-
-            modelBuilder.Entity<ProjectComment>()
-                .HasOne(pc => pc.Project)
-                .WithMany(p => p.Comments)
-                .HasForeignKey(pc => pc.IdProject)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<ProjectComment>()
-                .HasOne(pc => pc.User)
-                .WithMany(u => u.Comments)
-                .HasForeignKey(pc => pc.IdUser)
-                .OnDelete(DeleteBehavior.Restrict);
-
             modelBuilder.Entity<User>()
                 .ToTable("User")
                 .HasKey(s => s.Id);
