@@ -20,16 +20,6 @@ namespace DevFreela.Infrastructure.Persistence
         {
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
-            modelBuilder.Entity<User>()
-                .ToTable("User")
-                .HasKey(s => s.Id);
-
-            modelBuilder.Entity<User>()
-                .HasMany(u => u.Skills)
-                .WithOne()
-                .HasForeignKey(us => us.IdSkill)
-                .OnDelete(DeleteBehavior.Restrict);
-
             modelBuilder.Entity<Skill>()
                 .ToTable("Skill")
                 .HasKey(s => s.Id);
