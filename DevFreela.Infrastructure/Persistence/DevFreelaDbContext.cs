@@ -19,14 +19,6 @@ namespace DevFreela.Infrastructure.Persistence
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-
-            modelBuilder.Entity<Skill>()
-                .ToTable("Skill")
-                .HasKey(s => s.Id);
-
-            modelBuilder.Entity<UserSkill>()
-                .ToTable("UserSkill")
-                .HasKey(us => us.Id);
         }
     }
 }
