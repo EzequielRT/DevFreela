@@ -23,6 +23,8 @@ namespace DevFreela.Application.Services.Implementations
 
             _dbContext.Users.Add(user);
 
+            await _dbContext.SaveChangesAsync();
+
             return user.Id;
         }
 

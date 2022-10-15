@@ -3,6 +3,7 @@ using DevFreela.Application.Services.Interfaces;
 using DevFreela.Application.ViewModels;
 using DevFreela.Core.Entities;
 using DevFreela.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -24,6 +25,8 @@ namespace DevFreela.Application.Services.Implementations
 
             _dbContext.Projects.Add(project);
 
+            await _dbContext.SaveChangesAsync();
+
             return project.Id;
         }
 
@@ -33,7 +36,9 @@ namespace DevFreela.Application.Services.Implementations
 
             _dbContext.ProjectComments.Add(comment);
 
-            return true;
+            var result = await _dbContext.SaveChangesAsync();
+
+            return result > 0;
         }
 
         public async Task<bool> Delete(int id)
@@ -44,7 +49,10 @@ namespace DevFreela.Application.Services.Implementations
                 return false;
 
             project.Cancel();
-            return true;
+
+            var result = await _dbContext.SaveChangesAsync();
+
+            return result > 0;
         }
 
         public async Task<bool> Finish(int id)
@@ -55,7 +63,10 @@ namespace DevFreela.Application.Services.Implementations
                 return false;
 
             project.Cancel();
-            return true;
+
+            var result = await _dbContext.SaveChangesAsync();
+
+            return result > 0;
         }
 
         public async Task<List<ProjectViewModel>> GetAll(string query)
@@ -76,7 +87,10 @@ namespace DevFreela.Application.Services.Implementations
 
         public async Task<ProjectDetailsViewModel> GetById(int id)
         {
-            var project = _dbContext.Projects.SingleOrDefault(p => p.Id == id);
+            var project = _dbContext.Projects
+                .Include(p => p.Client)
+                .Include(p => p.Freelancer)
+                .SingleOrDefault(p => p.Id == id);
 
             if (project == null)
                 return null;
@@ -86,6 +100,8 @@ namespace DevFreela.Application.Services.Implementations
                 Id = project.Id,
                 Title = project.Title,
                 Description = project.Description,
+                ClientFullName = project.Client.FullName,
+                FreelancerFullName = project.Freelancer.FullName,
                 TotalCost = project.TotalCost,
                 StartedAt = project.StartedAt,
                 FinishedAt = project.FinishedAt
@@ -102,7 +118,10 @@ namespace DevFreela.Application.Services.Implementations
                 return false;
 
             project.Start();
-            return true;
+
+            var result = await _dbContext.SaveChangesAsync();
+
+            return result > 0;
         }
 
         public async Task<bool> Update(UpdateProjectInputModel inputModel)
@@ -113,7 +132,10 @@ namespace DevFreela.Application.Services.Implementations
                 return false;
 
             project.Update(inputModel.Title, inputModel.Description, inputModel.TotalCost);
-            return true;
+
+            var result = await _dbContext.SaveChangesAsync();
+
+            return result > 0;
         }
     }
 }
