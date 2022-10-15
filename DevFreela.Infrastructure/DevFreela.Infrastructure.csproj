@@ -5,11 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DevFreela.Core\DevFreela.Core.csproj" />
+    <Compile Remove="CloudServices\**" />
+    <EmbeddedResource Remove="CloudServices\**" />
+    <None Remove="CloudServices\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="CloudServices\Interfaces\" />
+    <ProjectReference Include="..\DevFreela.Core\DevFreela.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

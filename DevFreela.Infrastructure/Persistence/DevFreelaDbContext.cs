@@ -1,5 +1,6 @@
 ﻿using DevFreela.Core.Entities;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 
 namespace DevFreela.Infrastructure.Persistence
 {
@@ -17,21 +18,7 @@ namespace DevFreela.Infrastructure.Persistence
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Project>()
-                .ToTable("Project")
-                .HasKey(p => p.Id);
-
-            modelBuilder.Entity<Project>()
-                .HasOne(p => p.Freelancer)
-                .WithMany(u => u.FreelancerProjects)
-                .HasForeignKey(p => p.IdFreelancer)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<Project>()
-                .HasOne(p => p.Client)
-                .WithMany(u => u.OwnedProjects)
-                .HasForeignKey(p => p.IdClient)
-                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
             modelBuilder.Entity<ProjectComment>()
                 .ToTable("ProjectComment")
