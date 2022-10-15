@@ -14,5 +14,58 @@ namespace DevFreela.Infrastructure.Persistence
         public DbSet<User> Users { get; set; }
         public DbSet<Skill> Skills { get; set; }
         public DbSet<UserSkill> UserSkills { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Project>()
+                .ToTable("Project")
+                .HasKey(p => p.Id);
+
+            modelBuilder.Entity<Project>()
+                .HasOne(p => p.Freelancer)
+                .WithMany(u => u.FreelancerProjects)
+                .HasForeignKey(p => p.IdFreelancer)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Project>()
+                .HasOne(p => p.Client)
+                .WithMany(u => u.OwnedProjects)
+                .HasForeignKey(p => p.IdClient)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ProjectComment>()
+                .ToTable("ProjectComment")
+                .HasKey(pc => pc.Id);
+
+            modelBuilder.Entity<ProjectComment>()
+                .HasOne(pc => pc.Project)
+                .WithMany(p => p.Comments)
+                .HasForeignKey(pc => pc.IdProject)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ProjectComment>()
+                .HasOne(pc => pc.User)
+                .WithMany(u => u.Comments)
+                .HasForeignKey(pc => pc.IdUser)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<User>()
+                .ToTable("User")
+                .HasKey(s => s.Id);
+
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.Skills)
+                .WithOne()
+                .HasForeignKey(us => us.IdSkill)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Skill>()
+                .ToTable("Skill")
+                .HasKey(s => s.Id);
+
+            modelBuilder.Entity<UserSkill>()
+                .ToTable("UserSkill")
+                .HasKey(us => us.Id);
+        }
     }
 }
