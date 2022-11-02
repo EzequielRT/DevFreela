@@ -1,9 +1,14 @@
-﻿using DevFreela.Application.InputModels;
+﻿using Dapper;
+using DevFreela.Application.InputModels;
 using DevFreela.Application.Services.Interfaces;
 using DevFreela.Application.ViewModels;
 using DevFreela.Core.Entities;
+using DevFreela.Core.Enums;
 using DevFreela.Infrastructure.Persistence;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,10 +18,12 @@ namespace DevFreela.Application.Services.Implementations
     public class ProjectService : IProjectService
     {
         private readonly DevFreelaDbContext _dbContext;
+        private readonly string _connectionString;
 
-        public ProjectService(DevFreelaDbContext dbContext)
+        public ProjectService(DevFreelaDbContext dbContext, IConfiguration configuration)
         {
             _dbContext = dbContext;
+            _connectionString = configuration.GetConnectionString("DevFreelaCs");
         }
 
         public async Task<int> Create(NewProjectInputModel inputModel)
@@ -119,9 +126,26 @@ namespace DevFreela.Application.Services.Implementations
 
             project.Start();
 
-            var result = await _dbContext.SaveChangesAsync();
+            using (var sqlConnection = new SqlConnection(_connectionString))
+            {
+                await sqlConnection.OpenAsync();
 
-            return result > 0;
+                var sql = "UPDATE Project SET Status = @Status, StartedAt = @StartedAt WHERE Id = @Id";
+
+                var result = await sqlConnection.ExecuteAsync(sql,
+                           new
+                           {
+                               Id = id,
+                               Status = project.Status,
+                               StartedAt = project.StartedAt
+                           });
+
+                return result > 0;
+            }
+
+            //var result = await _dbContext.SaveChangesAsync();
+
+            //return result > 0;
         }
 
         public async Task<bool> Update(UpdateProjectInputModel inputModel)
