@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DevFreela.Application.ViewModels
+namespace DevFreela.Application.Queries.ProjectQueries.GetAllProjects
 {
     public class ProjectViewModel
     {
