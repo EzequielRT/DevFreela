@@ -4,6 +4,8 @@ namespace DevFreela.Core.Entities
 {
     public class Skill : BaseEntity
     {
+        public Skill() { }
+
         public Skill(string description)
         {
             Description = description;

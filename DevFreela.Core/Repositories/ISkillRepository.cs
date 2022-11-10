@@ -4,9 +4,8 @@ using System.Threading.Tasks;
 
 namespace DevFreela.Core.Repositories
 {
-    public interface IProjectRepository
+    public interface ISkillRepository
     {
-        public Task<List<Project>> GetAllProjects();
-        public Task<Project> GetProjectById(int id);
+        public Task<List<Skill>> GetAllSkills();
     }
 }

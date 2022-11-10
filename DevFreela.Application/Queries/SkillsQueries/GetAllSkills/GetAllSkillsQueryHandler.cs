@@ -1,7 +1,5 @@
-﻿using Dapper;
+﻿using DevFreela.Core.Repositories;
 using MediatR;
-using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -11,25 +9,26 @@ namespace DevFreela.Application.Queries.SkillsQueries.GetAllSkills
 {
     public class GetAllSkillsQueryHandler : IRequestHandler<GetAllSkillsQuery, List<SkillViewModel>>
     {
-        private readonly string _connectionString;
+        private readonly ISkillRepository _skillRepository;
 
-        public GetAllSkillsQueryHandler(IConfiguration configuration)
+        public GetAllSkillsQueryHandler(ISkillRepository skillRepository)
         {
-            _connectionString = configuration.GetConnectionString("DevFreelaCs");
+            _skillRepository = skillRepository;
         }
 
         public async Task<List<SkillViewModel>> Handle(GetAllSkillsQuery request, CancellationToken cancellationToken)
         {
-            using (var sqlConnection = new SqlConnection(_connectionString))
-            {
-                await sqlConnection.OpenAsync();
+            var skills = await _skillRepository.GetAllSkills();
 
-                var sql = "SELECT Id, Description FROM Skill";
+            var skillsViewModel = skills
+                .Select(x => new SkillViewModel()
+                {
+                    Id = x.Id,
+                    Description = x.Description
+                })
+                .ToList();
 
-                var skills = await sqlConnection.QueryAsync<SkillViewModel>(sql);
-
-                return skills.ToList();
-            }
+            return skillsViewModel;
         }
     }
 }
