@@ -1,9 +1,5 @@
-﻿using Dapper;
-using DevFreela.Infrastructure.Persistence;
+﻿using DevFreela.Core.Repositories;
 using MediatR;
-using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,40 +7,23 @@ namespace DevFreela.Application.Commands.ProjectCommands.StartProject
 {
     public class StartProjectCommandHandler : IRequestHandler<StartProjectCommand, bool>
     {
-        private readonly DevFreelaDbContext _dbContext;
-        private readonly string _connectionString;
+        private readonly IProjectRepository _projectRepository;
 
-        public StartProjectCommandHandler(DevFreelaDbContext dbContext, IConfiguration configuration)
+        public StartProjectCommandHandler(IProjectRepository projectRepository)
         {
-            _dbContext = dbContext;
-            _connectionString = configuration.GetConnectionString("DevFreelaCs");
+            _projectRepository = projectRepository;
         }
 
         public async Task<bool> Handle(StartProjectCommand request, CancellationToken cancellationToken)
         {
-            var project = _dbContext.Projects.SingleOrDefault(p => p.Id == request.Id);
+            var project = await _projectRepository.GetProjectById(request.Id);
 
             if (project == null)
                 return false;
 
             project.Start();
 
-            using (var sqlConnection = new SqlConnection(_connectionString))
-            {
-                await sqlConnection.OpenAsync();
-
-                var sql = "UPDATE Project SET Status = @Status, StartedAt = @StartedAt WHERE Id = @Id";
-
-                var result = await sqlConnection.ExecuteAsync(sql,
-                           new
-                           {
-                               Id = request.Id,
-                               Status = project.Status,
-                               StartedAt = project.StartedAt
-                           });
-
-                return result > 0;
-            }
+            return await _projectRepository.StartAsync(project);
         }
     }
 }

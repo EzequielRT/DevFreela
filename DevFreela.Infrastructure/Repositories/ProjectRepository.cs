@@ -1,6 +1,8 @@
-﻿using DevFreela.Core.Entities;
+﻿using Dapper;
+using DevFreela.Core.Entities;
 using DevFreela.Core.Repositories;
 using DevFreela.Infrastructure.Persistence;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
@@ -30,6 +32,48 @@ namespace DevFreela.Infrastructure.Repositories
                 .Include(p => p.Client)
                 .Include(p => p.Freelancer)
                 .SingleOrDefaultAsync(p => p.Id == id);
+        }
+
+        public async Task AddAsync(Project project)
+        {
+            await _dbContext.Projects.AddAsync(project);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task<bool> StartAsync(Project project)
+        {
+            int result;
+            using (var sqlConnection = new SqlConnection(_connectionString))
+            {
+                await sqlConnection.OpenAsync();
+
+                var sql = "UPDATE Project SET Status = @Status, StartedAt = @StartedAt WHERE Id = @Id";
+
+                result = await sqlConnection.ExecuteAsync(sql,
+                       new
+                       {
+                           Id = project.Id,
+                           Status = project.Status,
+                           StartedAt = project.StartedAt
+                       });
+            }
+
+            return result > 0;
+        }
+
+        public async Task<bool> SaveChangesAsync()
+        {
+            var result = await _dbContext.SaveChangesAsync();
+
+            return result > 0;
+        }
+
+        public async Task<bool> AddCommentAsync(ProjectComment comment)
+        {
+            await _dbContext.ProjectComments.AddAsync(comment);
+            var result = await _dbContext.SaveChangesAsync();
+
+            return result > 0;
         }
     }
 }
