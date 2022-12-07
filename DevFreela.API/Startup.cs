@@ -2,18 +2,25 @@ using DevFreela.API.Filters;
 using DevFreela.Application.Commands.ProjectCommands.CreateProject;
 using DevFreela.Application.Commands.UserCommands.CreateUser;
 using DevFreela.Core.Repositories;
+using DevFreela.Core.Services;
+using DevFreela.Infrastructure.Auth;
 using DevFreela.Infrastructure.Persistence;
 using DevFreela.Infrastructure.Repositories;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Security.Claims;
+using System.Text;
 
 namespace DevFreela.API
 {
@@ -37,6 +44,8 @@ namespace DevFreela.API
             services.AddScoped<ISkillRepository, SkillRepository>();
             #endregion
 
+            services.AddScoped<IAuthService, AuthService>();
+
             services.AddControllers(options => options.Filters.Add(typeof(ValidationFilter)));                 
 
             services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
@@ -47,6 +56,55 @@ namespace DevFreela.API
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "DevFreela.API", Version = "v1" });
+
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "JWT Authorization header usando o esquema Bearer."
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                 {
+                     {
+                           new OpenApiSecurityScheme
+                             {
+                                 Reference = new OpenApiReference
+                                 {
+                                     Type = ReferenceType.SecurityScheme,
+                                     Id = "Bearer"
+                                 }
+                             },
+                             new string[] {}
+                     }
+                 });
+            });
+
+            services
+              .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+              .AddJwtBearer(options =>
+              {
+                  options.TokenValidationParameters = new TokenValidationParameters
+                  {
+                      ValidateIssuer = true,
+                      ValidateAudience = true,
+                      ValidateLifetime = true,
+                      ValidateIssuerSigningKey = true,
+
+                      ValidIssuer = Configuration["Jwt:Issuer"],
+                      ValidAudience = Configuration["Jwt:Audience"],
+                      IssuerSigningKey = new SymmetricSecurityKey
+                    (Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
+                  };
+              });
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Freelancer", policy => policy.RequireClaim(ClaimTypes.Role, "freelancer"));
+                options.AddPolicy("Client", policy => policy.RequireClaim(ClaimTypes.Role, "client"));
             });
         }
 
@@ -62,6 +120,8 @@ namespace DevFreela.API
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 

@@ -7,12 +7,14 @@ using DevFreela.Application.Commands.ProjectCommands.UpdateProject;
 using DevFreela.Application.Queries.ProjectQueries.GetAllProjects;
 using DevFreela.Application.Queries.ProjectQueries.GetProjectById;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
 namespace DevFreela.API.Controllers
 {
     [Route("api/projects")]
+    [Authorize]
     public class ProjectsController : Controller
     {
         private readonly IMediator _mediator;
@@ -45,6 +47,7 @@ namespace DevFreela.API.Controllers
         }
 
         [HttpPost]
+        [Authorize("Client")]
         public async Task<IActionResult> Create([FromBody] CreateProjectCommand command)
         {
             if (command.Title.Length > 50)
@@ -56,6 +59,7 @@ namespace DevFreela.API.Controllers
         }
 
         [HttpPut]
+        [Authorize("Client")]
         public async Task<IActionResult> Update([FromBody] UpdateProjectCommand command)
         {
             if (string.IsNullOrWhiteSpace(command.Description))
@@ -70,6 +74,7 @@ namespace DevFreela.API.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize("Client")]
         public async Task<IActionResult> Delete(int id)
         {
             if (id <= decimal.Zero)
@@ -97,6 +102,7 @@ namespace DevFreela.API.Controllers
         }
 
         [HttpPut("{id}/start")]
+        [Authorize("Client")]
         public async Task<IActionResult> StartProject(int id)
         {
             if (id <= decimal.Zero)
@@ -113,6 +119,7 @@ namespace DevFreela.API.Controllers
         }
 
         [HttpPut("{id}/finish")]
+        [Authorize("Client")]
         public async Task<IActionResult> FinishProject(int id)
         {
             if (id <= decimal.Zero)

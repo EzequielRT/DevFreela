@@ -13,7 +13,7 @@ namespace DevFreela.Application.Commands.UserCommands.CreateUser
 
             RuleFor(p => p.Password)
                 .Must(ValidPassword)
-                .WithMessage("Senha deve conter pelo menos 8 caracteres, um número, uma letra maiúscula, e um caractere especial");
+                .WithMessage("Senha deve conter pelo menos 8 caracteres, um número, uma letra minúscula, uma letra maiúscula e um caractere especial");
 
             RuleFor(p => p.FullName)
                 .NotEmpty()
