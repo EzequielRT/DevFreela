@@ -1,7 +1,5 @@
 ﻿using DevFreela.Core.Repositories;
-using DevFreela.Infrastructure.Persistence;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -18,7 +16,7 @@ namespace DevFreela.Application.Commands.ProjectCommands.UpdateProject
 
         public async Task<bool> Handle(UpdateProjectCommand request, CancellationToken cancellationToken)
         {
-            var project = await _projectRepository.GetProjectById(request.Id);
+            var project = await _projectRepository.GetProjectByIdAsync(request.Id);
 
             if (project == null)
                 return false;

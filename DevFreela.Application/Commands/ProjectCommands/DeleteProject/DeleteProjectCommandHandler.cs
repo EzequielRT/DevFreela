@@ -16,7 +16,7 @@ namespace DevFreela.Application.Commands.ProjectCommands.DeleteProject
 
         public async Task<bool> Handle(DeleteProjectCommand request, CancellationToken cancellationToken)
         {
-            var project = await _projectRepository.GetProjectById(request.Id);
+            var project = await _projectRepository.GetProjectByIdAsync(request.Id);
 
             if (project == null)
                 return false;

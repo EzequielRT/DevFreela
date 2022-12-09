@@ -21,12 +21,12 @@ namespace DevFreela.Infrastructure.Repositories
             _connectionString = configuration.GetConnectionString("DevFreelaCs");
         }
 
-        public async Task<List<Project>> GetAllProjects()
+        public async Task<List<Project>> GetAllProjectsAsync()
         {
             return await _dbContext.Projects.ToListAsync();
         }
 
-        public async Task<Project> GetProjectById(int id)
+        public async Task<Project> GetProjectByIdAsync(int id)
         {
             return await _dbContext.Projects
                 .Include(p => p.Client)

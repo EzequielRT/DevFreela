@@ -16,7 +16,7 @@ namespace DevFreela.Application.Commands.ProjectCommands.FinishProject
 
         public async Task<bool> Handle(FinishProjectCommand request, CancellationToken cancellationToken)
         {
-            var project = await _projectRepository.GetProjectById(request.Id);
+            var project = await _projectRepository.GetProjectByIdAsync(request.Id);
 
             if (project == null)
                 return false;
