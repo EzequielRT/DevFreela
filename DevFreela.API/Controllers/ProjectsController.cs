@@ -120,17 +120,17 @@ namespace DevFreela.API.Controllers
 
         [HttpPut("{id}/finish")]
         [Authorize("Client")]
-        public async Task<IActionResult> FinishProject(int id)
+        public async Task<IActionResult> FinishProject(int id, [FromBody] FinishProjectCommand command)
         {
             if (id <= decimal.Zero)
                 return BadRequest();
 
-            var command = new FinishProjectCommand(id);
+            command.SetProjectId(id);
 
             var finished = await _mediator.Send(command);
 
             if (finished == false)
-                return BadRequest(command);
+                return BadRequest("O pagamento não pôde ser processado.");
 
             return NoContent();
         }
