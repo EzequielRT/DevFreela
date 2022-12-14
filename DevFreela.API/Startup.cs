@@ -49,6 +49,7 @@ namespace DevFreela.API
 
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IPaymentService, PaymentService>();
+            services.AddScoped<IMessageBusService, MessageBusService>();
 
             services.AddControllers(options => options.Filters.Add(typeof(ValidationFilter)));                 
 
