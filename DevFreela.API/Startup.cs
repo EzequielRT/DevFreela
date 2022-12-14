@@ -4,6 +4,7 @@ using DevFreela.Application.Commands.UserCommands.CreateUser;
 using DevFreela.Core.Repositories;
 using DevFreela.Core.Services;
 using DevFreela.Infrastructure.Auth;
+using DevFreela.Infrastructure.MessageBus;
 using DevFreela.Infrastructure.Payments;
 using DevFreela.Infrastructure.Persistence;
 using DevFreela.Infrastructure.Repositories;
@@ -39,8 +40,6 @@ namespace DevFreela.API
             services.AddDbContext<DevFreelaDbContext>(options => options.UseSqlServer(connectionString));
             //services.AddDbContext<DevFreelaDbContext>(options => options.UseInMemoryDatabase("DevFreelaMemoryDb"));
 
-            services.AddHttpClient();
-
             #region Repositories
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IProjectRepository, ProjectRepository>();
@@ -50,6 +49,8 @@ namespace DevFreela.API
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IPaymentService, PaymentService>();
             services.AddScoped<IMessageBusService, MessageBusService>();
+
+            services.AddHostedService<PaymentApprovedConsumer>();
 
             services.AddControllers(options => options.Filters.Add(typeof(ValidationFilter)));                 
 
